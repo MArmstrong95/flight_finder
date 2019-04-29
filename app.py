@@ -80,18 +80,23 @@ for flight in flightData:
 
     try:
         if int(seats) == 0:
-            successfulness = 0
-            flight["SUCCESSFULNESS"] = successfulness
-        elif float(int(passengers) / int(seats)) == 1:
-            successfulness = 0
-            flight["SUCCESSFULNESS"] = successfulness
+            flight["SUCCESSFULNESS"] = 0
+            flight["SEATS_AVAIL"] = 0
+        elif float(int(passengers) / int(seats)) >= 1:
+            flight["SUCCESSFULNESS"] = 0
+            flight["SEATS_AVAIL"] = 0
         else:
             successfulness = (((float(dep_perf) / float(dep_sched)) * .8) +
                               ((1 - (float(int(passengers) / int(seats)))) * .2)) * 100
-            flight["SUCCESSFULNESS"] = successfulness
+            if successfulness > 100:
+                flight["SUCCESSFULNESS"] = 0
+                flight["SEATS_AVAIL"] = 0
+            else:
+                flight["SUCCESSFULNESS"] = successfulness
+                flight["SEATS_AVAIL"] = int(int(seats) - int(passengers))
     except ZeroDivisionError:
-        successfulness = float(100)
-        flight["SUCCESSFULNESS"] = successfulness
+        flight["SUCCESSFULNESS"] = 0
+        flight["SEATS_AVAIL"] = 0
 
 # list to store best month for flights
 maxList = []
@@ -99,7 +104,7 @@ maxList = []
 bestFlights = []
 
 for flight in flightData:
-    if flight["SUCCESSFULNESS"] >= float(80):
+    if flight["SUCCESSFULNESS"] >= float(90):
         maxList.append(flight["MONTH"])
 
 # to return lists of data
@@ -109,7 +114,7 @@ destCities = []
 bestFlights = []
 
 for flight in flightData:
-    if flight["SUCCESSFULNESS"] >= float(90):
+    if (flight["SUCCESSFULNESS"] >= float(90)) & (int(flight["MONTH"]) == int(statistics.mode(maxList))) & (flight["SEATS_AVAIL"] > 20) & (flight["ORIGIN_CITY_NAME"] == "Charlotte, NC"):
         bestFlights.append(flight)
     newOgCity = flight["ORIGIN_CITY_NAME"]
     destCity = flight["DEST_CITY_NAME"]

@@ -1,3 +1,18 @@
+const months = {
+    1 : "January",
+    2 : "February",
+    3 : "March",
+    4 : "April",
+    5 : "May",
+    6 : "June",
+    7 : "July",
+    8 : "August",
+    9 : "September",
+    10 : "October",
+    11 : "November",
+    12 : "December"
+}
+
 async function listMode() {
     let value = await eel.printListMode()();
     document.getElementById("mostFreqMonth").innerHTML = value;
@@ -7,7 +22,7 @@ async function addFlights() {
     let flightList = await eel.getBestFlights()();
     var table = document.getElementById("flightsTable");
     var row = table.insertRow(1);
-    var carrier, originCity, destCity, distance, flight;
+    var carrier, originCity, destCity, distance, flight, month, success, seats;
 
     for (var i = 1; i < flightList.length; i++) {
         flight = flightList[i];
@@ -16,14 +31,16 @@ async function addFlights() {
         originCity = row.insertCell(1);
         destCity = row.insertCell(2);
         distance = row.insertCell(3);
-        month = row.insertCell(4);
-        success = row.insertCell(5);
+        seats = row.insertCell(4);
+        month = row.insertCell(5);
+        success = row.insertCell(6);
         carrier.innerHTML = flight.CARRIER_NAME;
         originCity.innerHTML = flight.ORIGIN_CITY_NAME;
         destCity.innerHTML = flight.DEST_CITY_NAME;
         distance.innerHTML = flight.DISTANCE;
-        month.innerHTML = flight.MONTH;
-        success.innerHTML = flight.SUCCESSFULNESS;
+        seats.innerHTML = flight.SEATS_AVAIL;
+        month.innerHTML = months[flight.MONTH];
+        success.innerHTML = flight.SUCCESSFULNESS.toFixed(2) + '%';
 
     }
 }
@@ -51,20 +68,7 @@ function deleteTableRows() {
 }
 
 function addMonths() {
-    var months = {
-        1 : "January",
-        2 : "February",
-        3 : "March",
-        4 : "April",
-        5 : "May",
-        6 : "June",
-        7 : "July",
-        8 : "August",
-        9 : "September",
-        10 : "October",
-        11 : "November",
-        12 : "December"
-    }
+
     var select = document.getElementById("selectMonth");
 
     console.log(months);
