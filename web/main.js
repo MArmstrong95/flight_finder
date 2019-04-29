@@ -13,11 +13,9 @@ const months = {
     12 : "December"
 }
 
-async function listMode() {
-    let value = await eel.printListMode()();
-    document.getElementById("mostFreqMonth").innerHTML = value;
-}
-
+//  function:   addFlights
+//  @param:     none
+//  purpose:    update the table with flights determined from pre selected criteria
 async function addFlights() {
     deleteTableRows();
     let flightList = await eel.getBestFlights()();
@@ -46,16 +44,16 @@ async function addFlights() {
     }
 }
 
+//  function:   searchFlights
+//  @param:     none
+//  purpose:    update the table with flights determined from search criteria
+//              provided by the user
 async function searchFlights() {
     deleteTableRows();
     searchMonth = document.getElementById("selectMonth").value;
     searchOrigin = document.getElementById("selectOrigin").value;
     searchDest = document.getElementById("selectDest").value;
     searchCarrier = document.getElementById("selectCarrier").value;
-    console.log(searchMonth);
-    console.log(searchOrigin);
-    console.log(searchDest);
-    console.log(searchCarrier);
 
     let flightList = await eel.getSearchFlights(searchMonth, searchOrigin, searchDest, searchCarrier)();
 
@@ -63,9 +61,25 @@ async function searchFlights() {
     var row = table.insertRow(1);
     var carrier, originCity, destCity, distance, flight, month, success, seats;
 
+    flight = flightList[0];
+    carrier = row.insertCell(0);
+    originCity = row.insertCell(1);
+    destCity = row.insertCell(2);
+    distance = row.insertCell(3);
+    seats = row.insertCell(4);
+    month = row.insertCell(5);
+    success = row.insertCell(6);
+    carrier.innerHTML = flight.CARRIER_NAME;
+    originCity.innerHTML = flight.ORIGIN_CITY_NAME;
+    destCity.innerHTML = flight.DEST_CITY_NAME;
+    distance.innerHTML = flight.DISTANCE + ' miles';
+    seats.innerHTML = flight.SEATS_AVAIL;
+    month.innerHTML = months[flight.MONTH];
+    success.innerHTML = flight.SUCCESSFULNESS.toFixed(2) + '%';
+
     for (var i = 1; i < flightList.length; i++) {
         flight = flightList[i];
-        row = table.insertRow(i);
+        row = table.insertRow((i+1));
         carrier = row.insertCell(0);
         originCity = row.insertCell(1);
         destCity = row.insertCell(2);
@@ -76,29 +90,16 @@ async function searchFlights() {
         carrier.innerHTML = flight.CARRIER_NAME;
         originCity.innerHTML = flight.ORIGIN_CITY_NAME;
         destCity.innerHTML = flight.DEST_CITY_NAME;
-        distance.innerHTML = flight.DISTANCE;
+        distance.innerHTML = flight.DISTANCE + ' miles';
         seats.innerHTML = flight.SEATS_AVAIL;
         month.innerHTML = months[flight.MONTH];
         success.innerHTML = flight.SUCCESSFULNESS.toFixed(2) + '%';
-
     }
-
 }
 
-async function updateFlights() {
-    let flightList = await eel.getFlights()();
-    var row, flight;
-    for (var i = 1; i < 15; i++) {
-        flight = flightList[i + 15];
-        row = document.getElementById("flightsTable").rows[i].cells;
-        row[0].innerHTML = flight.CARRIER_NAME;
-        row[1].innerHTML = flight.ORIGIN_CITY_NAME;
-        row[2].innerHTML = flight.DEST_CITY_NAME;
-        row[3].innerHTML = flight.DISTANCE;
-    }
-
-}
-
+//  function:   deleteTableRows
+//  @param:     none
+//  purpose:    delete all rows from table except for headers
 function deleteTableRows() {
     var table = document.getElementById("flightsTable");
 
@@ -107,6 +108,9 @@ function deleteTableRows() {
     }
 }
 
+//  function:   addMonths
+//  @param:     none
+//  purpose:    update selection of months
 function addMonths() {
     var select = document.getElementById("selectMonth");
     select.options[select.options.length] = new Option('','');
@@ -115,6 +119,9 @@ function addMonths() {
     }
 }
 
+//  function:   addOriginCities
+//  @param:     none
+//  purpose:    update selection of origin cities
 async function addOriginCities() {
     let cities = await eel.getOriginCities()();
     var select = document.getElementById("selectOrigin");
@@ -124,6 +131,9 @@ async function addOriginCities() {
     }
 }
 
+//  function:   addDestinationCities
+//  @param:     none
+//  purpose:    update selection of destination cities
 async function addDestinationCities() {
     let cities = await eel.getDestCities()();
     var select = document.getElementById("selectDest");
@@ -133,6 +143,9 @@ async function addDestinationCities() {
     }
 }
 
+//  function:   addCarriers
+//  @param:     none
+//  purpose:    update selection of carriers
 async function addCarriers() {
     let carriers = await eel.getCarriers()();
     var select = document.getElementById("selectCarrier");
@@ -142,6 +155,9 @@ async function addCarriers() {
     }
 }
 
+//  function:   start
+//  @param:     none
+//  purpose:    initialize options for dropdown menus
 function start() {
     addMonths();
     addOriginCities();
@@ -149,4 +165,5 @@ function start() {
     addCarriers();
 }
 
+// on window load, initialize elements with function start()
 window.onload = start;

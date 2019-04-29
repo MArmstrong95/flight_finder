@@ -100,36 +100,30 @@ def searchFlights(m, o, d, c):
                 flList.append(flight)
     return flList
 
-############## Functions to export to front end #################
-
-#   function:   printListMode
-#   @param:     none
-#   purpose:    return mode of successful months to front end
-@eel.expose
-def printListMode():
-    month = "Month with highest success rate: " + \
-        monthToString(statistics.mode(maxList))
-    return month
+################## External functions ########################
 
 #   function:   getBestFlights
 #   @param:     none
 #   purpose:    return best determined flights
 @eel.expose
 def getBestFlights():
-    return bestFlights
+    newBestFlights = sorted(bestFlights, key = lambda x: x["SUCCESSFULNESS"], reverse=True)
+    return newBestFlights
 
 #   function:   getOriginCities
 #   @param:     none
 #   purpose:    return all origin cities
 @eel.expose
 def getOriginCities():
-    return originCites
+    originCities.sort()
+    return originCities
 
 #   function:   getDestCities
 #   @param:     none
 #   purpose:    return all destination cities
 @eel.expose
 def getDestCities():
+    destCities.sort()
     return destCities
 
 #   function:   getCarriers
@@ -137,6 +131,7 @@ def getDestCities():
 #   purpose:    return all destination cities
 @eel.expose
 def getCarriers():
+    carriers.sort()
     return carriers
 
 #   function:   getSearchFlights
@@ -148,6 +143,7 @@ def getCarriers():
 @eel.expose
 def getSearchFlights(m, o, d, c):
     newFlightList = searchFlights(m, o, d, c)
+    newFlightList = sorted(newFlightList, key = lambda x: x["SUCCESSFULNESS"], reverse=True)
     return newFlightList
 
 ###############################################################################
@@ -178,6 +174,7 @@ for flight in flightData:
         else:
             successfulness = (((float(dep_perf) / float(dep_sched)) * .8) +
                               ((1 - (float(int(passengers) / int(seats)))) * .2)) * 100
+
             if successfulness > 100:
                 flight["SUCCESSFULNESS"] = 0
                 flight["SEATS_AVAIL"] = 0
@@ -198,7 +195,7 @@ for flight in flightData:
         maxList.append(flight["MONTH"])
 
 # to return lists of data
-originCites = []
+originCities = []
 destCities = []
 carriers = []
 # list for most successful flights
@@ -216,12 +213,12 @@ for flight in flightData:
     newOgCity = flight["ORIGIN_CITY_NAME"]
     destCity = flight["DEST_CITY_NAME"]
     carrier = flight["CARRIER_NAME"]
-    originCites.append(newOgCity)
+    originCities.append(newOgCity)
     destCities.append(destCity)
     carriers.append(carrier)
 
 # remove duplicates from lists
-originCites = list(dict.fromkeys(originCites))
+originCities = list(dict.fromkeys(originCities))
 destCities = list(dict.fromkeys(destCities))
 carriers = list(dict.fromkeys(carriers))
 
