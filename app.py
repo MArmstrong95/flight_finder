@@ -5,10 +5,12 @@ import statistics
 
 eel.init('web')
 
-# Internal functions for app.py
+############## Internal functions for app.py ####################
 
 #   function:   monthToString
 #   @param:     month -> number to be converted to month word
+
+
 def monthToString(month):
     m = {
         '1': 'January',
@@ -26,7 +28,7 @@ def monthToString(month):
     }
     return m[month]
 
-# Functions to export to front end
+############## Functions to export to front end #################
 
 #   function:   printListMode
 #   @param:     none
@@ -37,17 +39,29 @@ def printListMode():
         monthToString(statistics.mode(maxList))
     return month
 
+#   function:   getBestFlights
+#   @param:     none
+#   purpose:    return best determined flights
 @eel.expose
-def getFlights():
-    return flightData
+def getBestFlights():
+    return bestFlights
 
+#   function:   getOriginCities
+#   @param:     none
+#   purpose:    return all origin cities
 @eel.expose
 def getOriginCities():
     return originCites
 
+#   function:   getDestCities
+#   @param:     none
+#   purpose:    return all destination cities
 @eel.expose
 def getDestCities():
     return destCities
+
+###############################################################################
+
 
 # open project data for reading, read into JSON object, input into dictionary
 f = open('ProjectData.csv', 'r')
@@ -81,6 +95,8 @@ for flight in flightData:
 
 # list to store best month for flights
 maxList = []
+# list for most successful flights
+bestFlights = []
 
 for flight in flightData:
     if flight["SUCCESSFULNESS"] >= float(80):
@@ -89,14 +105,21 @@ for flight in flightData:
 # to return lists of data
 originCites = []
 destCities = []
+# list for most successful flights
+bestFlights = []
 
 for flight in flightData:
+    if flight["SUCCESSFULNESS"] >= float(90):
+        bestFlights.append(flight)
     newOgCity = flight["ORIGIN_CITY_NAME"]
     destCity = flight["DEST_CITY_NAME"]
     originCites.append(newOgCity)
     destCities.append(destCity)
 
+# remove duplicates from lists
 originCites = list(dict.fromkeys(originCites))
 destCities = list(dict.fromkeys(destCities))
+
+# bestFlights = list(dict.fromkeys(bestFlights))
 
 eel.start('main.html')

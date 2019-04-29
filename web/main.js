@@ -4,22 +4,26 @@ async function listMode() {
 }
 
 async function addFlights() {
-    let flightList = await eel.getFlights()();
+    let flightList = await eel.getBestFlights()();
     var table = document.getElementById("flightsTable");
     var row = table.insertRow(1);
     var carrier, originCity, destCity, distance, flight;
 
-    for (var i = 1; i < 15; i++) {
+    for (var i = 1; i < flightList.length; i++) {
         flight = flightList[i];
         row = table.insertRow(i);
         carrier = row.insertCell(0);
         originCity = row.insertCell(1);
         destCity = row.insertCell(2);
         distance = row.insertCell(3);
+        month = row.insertCell(4);
+        success = row.insertCell(5);
         carrier.innerHTML = flight.CARRIER_NAME;
         originCity.innerHTML = flight.ORIGIN_CITY_NAME;
         destCity.innerHTML = flight.DEST_CITY_NAME;
         distance.innerHTML = flight.DISTANCE;
+        month.innerHTML = flight.MONTH;
+        success.innerHTML = flight.SUCCESSFULNESS;
 
     }
 }
