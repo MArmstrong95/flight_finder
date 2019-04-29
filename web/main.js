@@ -19,6 +19,7 @@ async function listMode() {
 }
 
 async function addFlights() {
+    deleteTableRows();
     let flightList = await eel.getBestFlights()();
     var table = document.getElementById("flightsTable");
     var row = table.insertRow(1);
@@ -43,6 +44,43 @@ async function addFlights() {
         success.innerHTML = flight.SUCCESSFULNESS.toFixed(2) + '%';
 
     }
+}
+
+async function searchFlights() {
+    deleteTableRows();
+    searchMonth = document.getElementById("selectMonth").value;
+    searchOrigin = document.getElementById("selectOrigin").value;
+    searchDest = document.getElementById("selectDest").value;
+    console.log(searchMonth);
+    console.log(searchOrigin);
+    console.log(searchDest);
+
+    let flightList = await eel.getSearchFlights(searchMonth, searchOrigin, searchDest)();
+
+    var table = document.getElementById("flightsTable");
+    var row = table.insertRow(1);
+    var carrier, originCity, destCity, distance, flight, month, success, seats;
+
+    for (var i = 1; i < flightList.length; i++) {
+        flight = flightList[i];
+        row = table.insertRow(i);
+        carrier = row.insertCell(0);
+        originCity = row.insertCell(1);
+        destCity = row.insertCell(2);
+        distance = row.insertCell(3);
+        seats = row.insertCell(4);
+        month = row.insertCell(5);
+        success = row.insertCell(6);
+        carrier.innerHTML = flight.CARRIER_NAME;
+        originCity.innerHTML = flight.ORIGIN_CITY_NAME;
+        destCity.innerHTML = flight.DEST_CITY_NAME;
+        distance.innerHTML = flight.DISTANCE;
+        seats.innerHTML = flight.SEATS_AVAIL;
+        month.innerHTML = months[flight.MONTH];
+        success.innerHTML = flight.SUCCESSFULNESS.toFixed(2) + '%';
+
+    }
+
 }
 
 async function updateFlights() {
@@ -81,7 +119,7 @@ async function addOriginCities() {
     let cities = await eel.getOriginCities()();
     var select = document.getElementById("selectOrigin");
     for (index in cities) {
-        select.options[select.options.length] = new Option(cities[index],index);
+        select.options[select.options.length] = new Option(cities[index], cities[index]);
     }
 }
 
@@ -89,7 +127,7 @@ async function addDestinationCities() {
     let cities = await eel.getDestCities()();
     var select = document.getElementById("selectDest");
     for (index in cities) {
-        select.options[select.options.length] = new Option(cities[index],index);
+        select.options[select.options.length] = new Option(cities[index], cities[index]);
     }
 }
 

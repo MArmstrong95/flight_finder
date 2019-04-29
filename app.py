@@ -3,14 +3,13 @@ import csv
 import json
 import statistics
 
+# initialize front end folder
 eel.init('web')
 
 ############## Internal functions for app.py ####################
 
 #   function:   monthToString
 #   @param:     month -> number to be converted to month word
-
-
 def monthToString(month):
     m = {
         '1': 'January',
@@ -27,6 +26,20 @@ def monthToString(month):
         '12': 'December'
     }
     return m[month]
+
+#   function:   searchFlights
+#   @param:     m -> month
+#   @param:     o -> origin city
+#   @param:     d -> destination city
+#   @return:    fList -> list of flights based on search
+def searchFlights(m, o, d):
+    flList = []
+
+    for flight in flightData:
+        if (int(flight["MONTH"]) == int(m)) & (flight["SEATS_AVAIL"] > 0) & (flight["ORIGIN_CITY_NAME"] == o) & (flight["DEST_CITY_NAME"] == d):
+            flList.append(flight)
+
+    return flList
 
 ############## Functions to export to front end #################
 
@@ -59,6 +72,14 @@ def getOriginCities():
 @eel.expose
 def getDestCities():
     return destCities
+
+#   function:   getSearchFlights
+#   @param:     none
+#   purpose:    return flights based on search criteria
+@eel.expose
+def getSearchFlights(m, o, d):
+    newFlightList = searchFlights(m, o, d)
+    return newFlightList
 
 ###############################################################################
 
@@ -113,6 +134,12 @@ destCities = []
 # list for most successful flights
 bestFlights = []
 
+# - get list of origin cities and destination cites to load select in front end
+# - get the best flights determined by pre-selected data:
+#   1 - if the success rate is > 90%
+#   2 - if the month has the highest success rate
+#   3 - if the flight has more than 20 seats available
+#   4 - if the origin city is Charlotte, NC
 for flight in flightData:
     if (flight["SUCCESSFULNESS"] >= float(90)) & (int(flight["MONTH"]) == int(statistics.mode(maxList))) & (flight["SEATS_AVAIL"] > 20) & (flight["ORIGIN_CITY_NAME"] == "Charlotte, NC"):
         bestFlights.append(flight)
@@ -125,6 +152,5 @@ for flight in flightData:
 originCites = list(dict.fromkeys(originCites))
 destCities = list(dict.fromkeys(destCities))
 
-# bestFlights = list(dict.fromkeys(bestFlights))
-
+# start the server
 eel.start('main.html')
